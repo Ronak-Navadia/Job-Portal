@@ -11,17 +11,12 @@ import clsx from "clsx";
 import Loader from "../../components/Loader";
 import ReactSelect from "react-select";
 import { UploadYourCVModalSchema } from "./UploadYourCVValidation";
+import { statesDataList } from "../../shared/helpers/data";
 
 const UploadYourCVModal = ({ setUploadYourCVModal }: any) => {
   const [file, setFile] = useState<any>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
-  // const [categoryError, setCategoryError] = useState(false);
-  // const [jobListSelect, setJobListSelect] = useState({
-  //   value: "",
-  //   label: "Any - All Jobs",
-  // });
 
-  //category dropdown
   const [categorySelect, setCategorySelect] = useState({
     value: "",
     label: "Any - All Categories",
@@ -44,45 +39,6 @@ const UploadYourCVModal = ({ setUploadYourCVModal }: any) => {
       label: category.name,
     })) || [];
 
-  //location dropdown
-  // const [locationSelect, setLocationSelect] = useState({
-  //   value: "",
-  //   label: "Any - All Categories",
-  // });
-
-  // const getJobLocations = async () => {
-  //   const response = await axios.get(`http://localhost:3000/jobs-locations`);
-  //   return response.data;
-  // };
-
-  // const { data: jobLocationData, isLoading: jobLocationDataIsLoading } =
-  //   useQuery(["job-location-list"], () => getJobLocations());
-
-  // const jobLocationOptions =
-  //   jobLocationData?.map((location: any) => ({
-  //     value: location._id,
-  //     label: location.name,
-  //   })) || [];
-
-
-  //jobList
-  // const getJobListData = async () => {
-  //   const response = await axios.get(`http://localhost:3000/get-all-jobs`);
-  //   return response.data;
-  // };
-
-  // const { data: jobListData, isLoading: jobListDataIsLoading } =
-  //   useQuery({
-  //     queryKey: ["job-list"],
-  //     queryFn: () => getJobListData(),
-  //   });
-
-  // const jobOptions =
-  //   jobListData?.map((job: any) => ({
-  //     value: job._id,
-  //     label: job.title,
-  //   })) || [];
-
   const handleCloseModal = () => {
     setUploadYourCVModal(false);
   };
@@ -100,6 +56,7 @@ const UploadYourCVModal = ({ setUploadYourCVModal }: any) => {
     const response = await axios.post(`http://localhost:3000/apply`, data);
     return response.data;
   };
+  
   const { mutate: applyJobMutate, isLoading: applyJobIsLoading } = useMutation({
     mutationFn: (data) => addJobApplication(data),
     onSuccess: () => {
@@ -111,7 +68,7 @@ const UploadYourCVModal = ({ setUploadYourCVModal }: any) => {
   const customStyles = {
     control: (base:any) => ({
       ...base,
-      borderColor: 'red', // Set border color to red
+      borderColor: 'red',
     }),
   };
 
@@ -145,11 +102,8 @@ const UploadYourCVModal = ({ setUploadYourCVModal }: any) => {
         });
         formData.append("resume_file", file);
         formData.append("category_id", categorySelect.value)
-        // formData.append("job_id", jobListSelect.value);
-        // const categoryId = jobListData.find((job:any) => job._id === jobListSelect.value).category_id;
 
-        // formData.append("category_id", categoryId);
-        if (!file || file.name) {
+        if (!file || !file.name) {
           toast.error("Please upload resume");
           return;
         }
@@ -161,7 +115,8 @@ const UploadYourCVModal = ({ setUploadYourCVModal }: any) => {
 
 
   const handleOnChangeEvent = (event: any) => {
-    setFieldValue(event?.target.name, Number(event.target.value));
+    const value = event?.target.value.replace(/[^\d]/g, '');
+    setFieldValue(event?.target.name, value.slice(0, 10));
   };
 
   const onStateChange = (event: any) => {
@@ -195,6 +150,8 @@ const UploadYourCVModal = ({ setUploadYourCVModal }: any) => {
       return;
     }
 
+    console.log('here');
+
     setFile(fileObj);
     e.target.value = null;
   };
@@ -210,14 +167,6 @@ const UploadYourCVModal = ({ setUploadYourCVModal }: any) => {
     setFieldValue('category_id', event.value)
   };
 
-  // const handleLocationChange = (event: any) => {
-  //   setLocationSelect(event);
-  // }
-
-  // const handleJobListChange = (event: any) => {
-  //   setJobListSelect(event);
-  // };
-
   if (applyJobIsLoading || jobCategoryDataIsLoading ) {
     return (
       <div className="text-center py-4 bg-white banner-height">
@@ -225,49 +174,6 @@ const UploadYourCVModal = ({ setUploadYourCVModal }: any) => {
       </div>
     );
   }
-
-  const statesDataList = [
-    { value: "SelectState", label: "Select State" },
-    { value: "Andra Pradesh", label: "Andra Pradesh" },
-    { value: "Arunachal Pradesh", label: "Arunachal Pradesh" },
-    { value: "Assam", label: "Assam" },
-    { value: "Bihar", label: "Bihar" },
-    { value: "Chhattisgarh", label: "Chhattisgarh" },
-    { value: "Goa", label: "Goa" },
-    { value: "Gujarat", label: "Gujarat" },
-    { value: "Haryana", label: "Haryana" },
-    { value: "Himachal Pradesh", label: "Himachal Pradesh" },
-    { value: "Jammu and Kashmir", label: "Jammu and Kashmir" },
-    { value: "Jharkhand", label: "Jharkhand" },
-    { value: "Karnataka", label: "Karnataka" },
-    { value: "Kerala", label: "Kerala" },
-    { value: "Madya Pradesh", label: "Madya Pradesh" },
-    { value: "Maharashtra", label: "Maharashtra" },
-    { value: "Manipur", label: "Manipur" },
-    { value: "Meghalaya", label: "Meghalaya" },
-    { value: "Mizoram", label: "Mizoram" },
-    { value: "Nagaland", label: "Nagaland" },
-    { value: "Orissa", label: "Orissa" },
-    { value: "Punjab", label: "Punjab" },
-    { value: "Rajasthan", label: "Rajasthan" },
-    { value: "Sikkim", label: "Sikkim" },
-    { value: "Tamil Nadu", label: "Tamil Nadu" },
-    { value: "Telangana", label: "Telangana" },
-    { value: "Tripura", label: "Tripura" },
-    { value: "Uttaranchal", label: "Uttaranchal" },
-    { value: "Uttar Pradesh", label: "Uttar Pradesh" },
-    { value: "West Bengal", label: "West Bengal" },
-    {
-      value: "Andaman and Nicobar Islands",
-      label: "Andaman and Nicobar Islands",
-    },
-    { value: "Chandigarh", label: "Chandigarh" },
-    { value: "Dadar and Nagar Haveli", label: "Dadar and Nagar Haveli" },
-    { value: "Daman and Diu", label: "Daman and Diu" },
-    { value: "Delhi", label: "Delhi" },
-    { value: "Lakshadeep", label: "Lakshadeep" },
-    { value: "Pondicherry", label: "Pondicherry" },
-  ];
 
   return (
     <>
@@ -300,7 +206,7 @@ const UploadYourCVModal = ({ setUploadYourCVModal }: any) => {
               <form onSubmit={handleSubmit}>
                 <div className="form-row">
                   <div className="form-group col-md-4">
-                    <FormLabel name="First Name" htmlFor="htmlFor" />
+                    <FormLabel name="First Name*" htmlFor="htmlFor" />
                     <FormControl
                       onChange={handleChange}
                       value={values.first_name}
@@ -312,7 +218,7 @@ const UploadYourCVModal = ({ setUploadYourCVModal }: any) => {
                     <FormError error={errors.first_name} />
                   </div>
                   <div className="form-group col-md-4">
-                    <FormLabel name="Last Name" htmlFor="lastname" />
+                    <FormLabel name="Last Name*" htmlFor="lastname" />
                     <FormControl
                       onChange={handleChange}
                       value={values.last_name}
@@ -325,7 +231,7 @@ const UploadYourCVModal = ({ setUploadYourCVModal }: any) => {
                   </div>
 
                   <div className="form-group col-md-4">
-                    <FormLabel name="Email" htmlFor="youremail" />
+                    <FormLabel name="Email*" htmlFor="youremail" />
                     <FormControl
                       onChange={handleChange}
                       value={values.email}
@@ -338,7 +244,7 @@ const UploadYourCVModal = ({ setUploadYourCVModal }: any) => {
                   </div>
 
                   <div className="form-group col-md-4">
-                    <FormLabel name="Pancard number" htmlFor="pan_number" />
+                    <FormLabel name="Pancard number*" htmlFor="pan_number" />
                     <FormControl
                       onChange={handleChange}
                       value={values.pan_number}
@@ -350,7 +256,7 @@ const UploadYourCVModal = ({ setUploadYourCVModal }: any) => {
                     <FormError error={errors.pan_number} />
                   </div>
                   <div className="form-group col-md-4">
-                    <FormLabel name="Mobile number" htmlFor="mobilenumber" />
+                    <FormLabel name="Mobile number*" htmlFor="mobilenumber" />
                     <FormControl
                       onChange={(event: any) => handleOnChangeEvent(event)}
                       value={values.mobile_number}
@@ -363,7 +269,7 @@ const UploadYourCVModal = ({ setUploadYourCVModal }: any) => {
                   </div>
 
                   <div className="form-group col-md-4">
-                    <FormLabel name="Education" htmlFor="education" />
+                    <FormLabel name="Education*" htmlFor="education" />
                     <FormControl
                       onChange={handleChange}
                       value={values.education}
@@ -376,8 +282,7 @@ const UploadYourCVModal = ({ setUploadYourCVModal }: any) => {
                   </div>
 
                   <div className="form-group col-md-4">
-                    <FormLabel name="CTC (in lakh)" htmlFor="ctc" />
-                    <FormLabel name="" htmlFor="ctc" />
+                    <FormLabel name="CTC* (in lakh)" htmlFor="ctc" />
                     <FormControl
                       onChange={(event: any) => handleOnChangeEvent(event)}
                       value={values.ctc}
@@ -390,7 +295,7 @@ const UploadYourCVModal = ({ setUploadYourCVModal }: any) => {
                   </div>
 
                   <div className="form-group col-md-4">
-                    <FormLabel name="Expected CTC (in lakh)" htmlFor="expctc" />
+                    <FormLabel name="Expected CTC* (in lakh)" htmlFor="expctc" />
                     <FormControl
                       onChange={(event: any) => handleOnChangeEvent(event)}
                       value={values.expected_ctc}
@@ -404,7 +309,7 @@ const UploadYourCVModal = ({ setUploadYourCVModal }: any) => {
                   </div>
 
                   <div className="form-group col-md-4">
-                    <FormLabel name="Category" htmlFor="select catgory" />
+                    <FormLabel name="Category*" htmlFor="select catgory" />
                     <ReactSelect
                       styles={errors.category_id ? customStyles : {}}
                       name="job-categories"
@@ -420,7 +325,7 @@ const UploadYourCVModal = ({ setUploadYourCVModal }: any) => {
 
                   <div className="form-group col-md-4">
                     <FormLabel
-                      name="Total Work Experience (years)"
+                      name="Total Work Experience* (years)"
                       htmlFor="workexperience"
                     />
                     <FormControl
@@ -435,7 +340,7 @@ const UploadYourCVModal = ({ setUploadYourCVModal }: any) => {
                   </div>
 
                   <div className="form-group col-md-4">
-                    <FormLabel name="Gender" htmlFor="gendar" />
+                    <FormLabel name="Gender*" htmlFor="gendar" />
                     <select
                       className={clsx(
                         errors.gender ? "is-error" : "",
@@ -455,22 +360,8 @@ const UploadYourCVModal = ({ setUploadYourCVModal }: any) => {
                     <FormError error={errors.gender} />
                   </div>
 
-                  {/* <div className="form-group col-md-4">
-                    <FormLabel name="Select Job" htmlFor="inputState" />
-                    <ReactSelect
-                      name="job-categories"
-                      value={jobListSelect}
-                      options={jobOptions}
-                      onChange={handleJobListChange}
-                      components={{
-                        IndicatorSeparator: () => null,
-                      }}
-                    />
-                    <FormError error={errors.job_listSelect} />
-                  </div> */}
-
                   <div className="form-group col-md-4">
-                    <FormLabel name="State" htmlFor="state" />
+                    <FormLabel name="State*" htmlFor="state" />
                     <select
                       className={clsx(
                         errors.state ? "is-error" : "",
@@ -492,7 +383,7 @@ const UploadYourCVModal = ({ setUploadYourCVModal }: any) => {
 
                   
                   <div className="form-group col-md-4">
-                    <FormLabel name="Notice Period (days)" htmlFor="notice_period" />
+                    <FormLabel name="Notice Period* (days)" htmlFor="notice_period" />
                     <FormControl
                       onChange={(event: any) => handleOnChangeEvent(event)}
                       value={values.notice_period}
@@ -503,19 +394,6 @@ const UploadYourCVModal = ({ setUploadYourCVModal }: any) => {
                     />
                     <FormError error={errors.notice_period} />
                   </div>
-
-                  {/* <div className="form-group col-md-4">
-                    <label htmlFor="inputState">Select Location</label>
-                    <ReactSelect
-                      name="job-location"
-                      onChange={handleLocationChange}
-                      value={locationSelect}
-                      options={jobLocationOptions}
-                      components={{
-                        IndicatorSeparator: () => null,
-                      }}
-                    />
-                  </div> */}
 
                   <div className="form-group col-md-12">
                     <label htmlFor="resume" className="btn-link mb-0 font-weight-bold cursor-pointer">Add Resume</label>

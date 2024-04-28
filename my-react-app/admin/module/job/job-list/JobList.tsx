@@ -9,7 +9,7 @@ import Loader from "../../../shared/Loader";
 import { DownloadIcon } from "../../../shared/Icon";
 import * as XLSX from "xlsx";
 import ReactSelect from "react-select";
-
+import ReactPaginate from "react-paginate";
 
 const JobList = () => {
   const navigate = useNavigate();
@@ -25,8 +25,7 @@ const JobList = () => {
     label: "Any - All Locations",
   });
 
-  console.log(categorySelect)
-  console.log(locationSelect)
+  const [page, setPage] = useState(1);
 
   const { data: jobCategoryData, isLoading: jobCategoryDataIsLoading } =
     useQuery(["job-category-list"], () => getAllCategories());
@@ -46,7 +45,6 @@ const JobList = () => {
       label: location.name,
     })) || [];
 
-
   // const fetchJobs = async (page: number) => {
   //   const response = await axios.get(
   //     `http://localhost:3000/jobs?page=${page}&search=${jobListFilter.searchFilter}&category=${jobListFilter.categoryFilter}&location=${jobListFilter.locationFilter}`
@@ -64,7 +62,9 @@ const JobList = () => {
     data: jobListData,
     refetch: jobListRefetch,
     isLoading: jobListIsLoading,
-  } = useQuery(["getAllJob", categorySelect, locationSelect], () => getAllJob(categorySelect, locationSelect));
+  } = useQuery(["getAllJob", categorySelect, locationSelect, page], () =>
+    getAllJob(categorySelect, locationSelect, page)
+  );
 
   const handleEditClick = (id: any) => {
     navigate(`/admin/update-job/${id}`);
@@ -113,7 +113,7 @@ const JobList = () => {
       value: "",
       label: "Any - All Locations",
     });
-  }
+  };
 
   const handleCategoryChange = (event: any) => {
     setCategorySelect(event);
@@ -123,7 +123,15 @@ const JobList = () => {
     setLocationSelect(event);
   };
 
-  if (jobListIsLoading || jobCategoryDataIsLoading || jobLocationDataIsLoading) {
+  const handlePageChange = (selected: number) => {
+    setPage(selected + 1);
+  };
+
+  if (
+    jobListIsLoading ||
+    jobCategoryDataIsLoading ||
+    jobLocationDataIsLoading
+  ) {
     return (
       <div className="py-4 banner-height d-flex justify-content-center">
         <Loader />
@@ -145,7 +153,6 @@ const JobList = () => {
                 Export &nbsp;
                 <DownloadIcon />
               </button>
-              
             </div>
             <div className="d-flex gap-3 align-items-center mb-3">
               <div className="mr-2">
@@ -178,34 +185,35 @@ const JobList = () => {
                 Reset
               </button>
             </div>
-              
+
             <div className="g-4 mb-4 overflow-x-auto">
               <table className="table">
                 <thead>
                   <tr>
+                    <th scope="col">Job Title</th>
                     <th scope="col">Company Name</th>
-                    <th scope="col">Company Email</th>
-                    <th scope="col">Job Location</th>
                     <th scope="col">Job Category</th>
+                    <th scope="col">Job Location</th>
                     <th scope="col">Job Nature</th>
                     <th scope="col">Vacancy</th>
                     <th scope="col">Action</th>
                   </tr>
                 </thead>
                 <tbody>
-                  {!jobListData ||
-                    (jobListData.length === 0 && (
+                  {!jobListData.data ||
+                    (jobListData.data.length === 0 && (
                       <tr>
                         <td colSpan={7}>
                           <h3 className="text-center my-5">No Data Found</h3>
                         </td>
                       </tr>
                     ))}
-                  {jobListData &&
-                    jobListData.map((job: any, index: number) => (
+                  {jobListData.data &&
+                    jobListData.data.length > 0 &&
+                    jobListData.data.map((job: any, index: number) => (
                       <tr key={index}>
+                        <td>{job.title}</td>
                         <td>{job.company_name}</td>
-                        <td>{job.company_email}</td>
                         <td className="company__description">
                           {job.category_id.name}
                         </td>
@@ -239,6 +247,22 @@ const JobList = () => {
                 </tbody>
               </table>
             </div>
+            {jobListData.pageInfo.length > 0 && (
+              <>
+                <ReactPaginate
+                  className="custom-pagination "
+                  breakLabel="..."
+                  nextLabel="Next"
+                  onPageChange={(event) => handlePageChange(event.selected)}
+                  pageCount={jobListData.pageInfo[0].totalPages}
+                  pageRangeDisplayed={3}
+                  previousLabel="Previous"
+                  renderOnZeroPageCount={null}
+                  activeClassName="paginate-active"
+                  forcePage={jobListData.pageInfo[0].currentPage}
+                />
+              </>
+            )}
           </div>
         </div>
       </div>

@@ -1,4 +1,5 @@
 import clsx from "clsx";
+import { Placeholder } from "react-select/animated";
 
 interface FormControlProps {
   id: string;
@@ -7,6 +8,7 @@ interface FormControlProps {
   className?: string;
   onChange: React.ChangeEventHandler<HTMLInputElement>;
   value: string | number;
+  placeholderText?: string;
 }
 const FormControl = ({
   id,
@@ -15,6 +17,7 @@ const FormControl = ({
   value,
   name,
   className,
+  placeholderText
 }: FormControlProps) => {
   return (
     <input
@@ -24,6 +27,7 @@ const FormControl = ({
       onChange={onChange}
       className={clsx(className, `form-control`)}
       id={id}
+      placeholder={placeholderText || ""}
     />
   );
 };

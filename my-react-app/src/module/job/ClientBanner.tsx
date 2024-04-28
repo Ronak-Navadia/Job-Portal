@@ -14,9 +14,10 @@ type ClientBannerProps = {
     }>
   >;
   setPage: React.Dispatch<React.SetStateAction<number>>;
+  jobDataRefetch: any;
 };
 
-const ClientBanner = ({ setJobListFilter, setPage }: ClientBannerProps) => {
+const ClientBanner = ({ setJobListFilter, setPage, jobDataRefetch }: ClientBannerProps) => {
   const [categorySelect, setCategorySelect] = useState({
     value: "",
     label: "Any - All Categories",
@@ -25,7 +26,6 @@ const ClientBanner = ({ setJobListFilter, setPage }: ClientBannerProps) => {
     value: "",
     label: "Any - All Locations",
   });
-  const [search, setSearch] = useState("");
 
   const customStyles = {
     indicatorContainer: (base: any) => ({
@@ -80,25 +80,39 @@ const ClientBanner = ({ setJobListFilter, setPage }: ClientBannerProps) => {
 
   const handleCategoryChange = (event: any) => {
     setCategorySelect(event);
+    setJobListFilter((prev:any) => {
+      return {
+        ...prev,
+        categoryFilter: event.value
+      }
+    })
   };
 
   const handleLocationChange = (event: any) => {
     setLocationSelect(event);
+    setJobListFilter((prev:any) => {
+      return {
+        ...prev,
+        locationFilter: event.value
+      }
+    })
   };
 
   const handleSearchChange = (event: any) => {
-    setSearch(event?.target.value);
+    setJobListFilter((prev:any) => {
+      return {
+        ...prev,
+        searchFilter: event.target.value
+      }
+    })
   };
 
   const onClickFind = (e: any) => {
     e.preventDefault();
-    setJobListFilter({
-      searchFilter: search,
-      locationFilter: locationSelect.value === "" ? "" : locationSelect.label,
-      categoryFilter: categorySelect.value === "" ? "" : categorySelect.label,
-    });
+    jobDataRefetch();
     setPage(1);
   };
+
   if (jobCategoryDataIsLoading || jobLocationDataIsLoading) {
     return <div className="py-4 banner-height">
       <Loader />
@@ -126,7 +140,7 @@ const ClientBanner = ({ setJobListFilter, setPage }: ClientBannerProps) => {
                       id="search"
                       name="search"
                       onChange={handleSearchChange}
-                      placeholder="Please Search Job"
+                      placeholder="Search Job"
                       required={false}
                     />
                   </div>

@@ -11,6 +11,7 @@ import { ApplicationModalSchema } from "./validation";
 import FormError from "../../components/FormError";
 import clsx from "clsx";
 import Loader from "../../components/Loader";
+import { statesDataList } from "../../shared/helpers/data";
 
 const ApplicationModal = ({ setApplyNowModal, applyJobData }: any) => {
   const [file, setFile] = useState<any>(null);
@@ -42,7 +43,7 @@ const ApplicationModal = ({ setApplyNowModal, applyJobData }: any) => {
     },
   });
 
-  const { handleSubmit, setFieldValue, errors, values, handleChange } =
+  const { handleSubmit, setFieldValue, errors, values, handleChange,  } =
     useFormik({
       initialValues: {
         job_id: "",
@@ -86,8 +87,6 @@ const ApplicationModal = ({ setApplyNowModal, applyJobData }: any) => {
   const handleOnChangeEvent = (event: any) => {
     const value = event?.target.value.replace(/[^\d]/g, '');
     setFieldValue(event?.target.name, value.slice(0, 10));
-
-    // setFieldValue(event?.target.name, Number(event.target.value));
   };
 
   const onStateChange = (event: any) => {
@@ -139,49 +138,6 @@ const ApplicationModal = ({ setApplyNowModal, applyJobData }: any) => {
     );
   }
 
-  const statesDataList = [
-    { value: "SelectState", label: "Select State" },
-    { value: "Andra Pradesh", label: "Andra Pradesh" },
-    { value: "Arunachal Pradesh", label: "Arunachal Pradesh" },
-    { value: "Assam", label: "Assam" },
-    { value: "Bihar", label: "Bihar" },
-    { value: "Chhattisgarh", label: "Chhattisgarh" },
-    { value: "Goa", label: "Goa" },
-    { value: "Gujarat", label: "Gujarat" },
-    { value: "Haryana", label: "Haryana" },
-    { value: "Himachal Pradesh", label: "Himachal Pradesh" },
-    { value: "Jammu and Kashmir", label: "Jammu and Kashmir" },
-    { value: "Jharkhand", label: "Jharkhand" },
-    { value: "Karnataka", label: "Karnataka" },
-    { value: "Kerala", label: "Kerala" },
-    { value: "Madya Pradesh", label: "Madya Pradesh" },
-    { value: "Maharashtra", label: "Maharashtra" },
-    { value: "Manipur", label: "Manipur" },
-    { value: "Meghalaya", label: "Meghalaya" },
-    { value: "Mizoram", label: "Mizoram" },
-    { value: "Nagaland", label: "Nagaland" },
-    { value: "Orissa", label: "Orissa" },
-    { value: "Punjab", label: "Punjab" },
-    { value: "Rajasthan", label: "Rajasthan" },
-    { value: "Sikkim", label: "Sikkim" },
-    { value: "Tamil Nadu", label: "Tamil Nadu" },
-    { value: "Telangana", label: "Telangana" },
-    { value: "Tripura", label: "Tripura" },
-    { value: "Uttaranchal", label: "Uttaranchal" },
-    { value: "Uttar Pradesh", label: "Uttar Pradesh" },
-    { value: "West Bengal", label: "West Bengal" },
-    {
-      value: "Andaman and Nicobar Islands",
-      label: "Andaman and Nicobar Islands",
-    },
-    { value: "Chandigarh", label: "Chandigarh" },
-    { value: "Dadar and Nagar Haveli", label: "Dadar and Nagar Haveli" },
-    { value: "Daman and Diu", label: "Daman and Diu" },
-    { value: "Delhi", label: "Delhi" },
-    { value: "Lakshadeep", label: "Lakshadeep" },
-    { value: "Pondicherry", label: "Pondicherry" },
-  ];
-
   return (
     <>
       <div
@@ -213,7 +169,7 @@ const ApplicationModal = ({ setApplyNowModal, applyJobData }: any) => {
               <form onSubmit={handleSubmit}>
                 <div className="form-row">
                   <div className="form-group col-md-4">
-                    <FormLabel name="First Name" htmlFor="htmlFor" />
+                    <FormLabel name="First Name*" htmlFor="htmlFor" />
                     <FormControl
                       onChange={handleChange}
                       value={values.first_name}
@@ -225,7 +181,7 @@ const ApplicationModal = ({ setApplyNowModal, applyJobData }: any) => {
                     <FormError error={errors.first_name} />
                   </div>
                   <div className="form-group col-md-4">
-                    <FormLabel name="Last Name" htmlFor="lastname" />
+                    <FormLabel name="Last Name*" htmlFor="lastname" />
                     <FormControl
                       onChange={handleChange}
                       value={values.last_name}
@@ -238,7 +194,7 @@ const ApplicationModal = ({ setApplyNowModal, applyJobData }: any) => {
                   </div>
 
                   <div className="form-group col-md-4">
-                    <FormLabel name="Email" htmlFor="youremail" />
+                    <FormLabel name="Email*" htmlFor="youremail" />
                     <FormControl
                       onChange={handleChange}
                       value={values.email}
@@ -251,7 +207,7 @@ const ApplicationModal = ({ setApplyNowModal, applyJobData }: any) => {
                   </div>
 
                   <div className="form-group col-md-4">
-                    <FormLabel name="Pancard number" htmlFor="pan_number" />
+                    <FormLabel name="Pancard number*" htmlFor="pan_number" />
                     <FormControl
                       onChange={handleChange}
                       value={values.pan_number}
@@ -263,10 +219,9 @@ const ApplicationModal = ({ setApplyNowModal, applyJobData }: any) => {
                     <FormError error={errors.pan_number} />
                   </div>
                   <div className="form-group col-md-4">
-                    <FormLabel name="Mobile number" htmlFor="mobilenumber" />
+                    <FormLabel name="Mobile number*" htmlFor="mobilenumber" />
                     <FormControl
                       onChange={(event: any) => handleOnChangeEvent(event)}
-                      // onChange={handleChange}
                       value={values.mobile_number}
                       id="mobile_number"
                       name="mobile_number"
@@ -277,7 +232,7 @@ const ApplicationModal = ({ setApplyNowModal, applyJobData }: any) => {
                   </div>
 
                   <div className="form-group col-md-4">
-                    <FormLabel name="Education" htmlFor="education" />
+                    <FormLabel name="Education*" htmlFor="education" />
                     <FormControl
                       onChange={handleChange}
                       value={values.education}
@@ -290,7 +245,7 @@ const ApplicationModal = ({ setApplyNowModal, applyJobData }: any) => {
                   </div>
 
                   <div className="form-group col-md-4">
-                    <FormLabel name="CTC (in lakh)" htmlFor="CTC" />
+                    <FormLabel name="CTC* (in lakh)" htmlFor="CTC" />
                     <FormLabel name="" htmlFor="ctc" />
                     <FormControl
                       onChange={(event: any) => handleOnChangeEvent(event)}
@@ -304,7 +259,7 @@ const ApplicationModal = ({ setApplyNowModal, applyJobData }: any) => {
                   </div>
 
                   <div className="form-group col-md-4">
-                    <FormLabel name="Expected CTC (in lakh)" htmlFor="expctc" />
+                    <FormLabel name="Expected CTC* (in lakh)" htmlFor="expctc" />
                     <FormControl
                       onChange={(event: any) => handleOnChangeEvent(event)}
                       value={values.expected_ctc}
@@ -317,7 +272,7 @@ const ApplicationModal = ({ setApplyNowModal, applyJobData }: any) => {
                   </div>
 
                   <div className="form-group col-md-4">
-                    <FormLabel name="Notice Period (days)" htmlFor="notice_period" />
+                    <FormLabel name="Notice Period* (days)" htmlFor="notice_period" />
                     <FormControl
                       onChange={(event: any) => handleOnChangeEvent(event)}
                       value={values.notice_period}
@@ -331,7 +286,7 @@ const ApplicationModal = ({ setApplyNowModal, applyJobData }: any) => {
 
                   <div className="form-group col-md-4">
                     <FormLabel
-                      name="Total Work Experience (years)"
+                      name="Total Work Experience* (years)"
                       htmlFor="workexperience"
                     />
                     <FormControl
@@ -346,7 +301,7 @@ const ApplicationModal = ({ setApplyNowModal, applyJobData }: any) => {
                   </div>
 
                   <div className="form-group col-md-4">
-                    <FormLabel name="Gender" htmlFor="gendar" />
+                    <FormLabel name="Gender*" htmlFor="gendar" />
                     <select
                       className={clsx(
                         errors.gender ? "is-error" : "",
@@ -366,7 +321,7 @@ const ApplicationModal = ({ setApplyNowModal, applyJobData }: any) => {
                   </div>
 
                   <div className="form-group col-md-4">
-                    <FormLabel name="State" htmlFor="inputState" />
+                    <FormLabel name="State*" htmlFor="inputState" />
                     <select
                       className={clsx(
                         errors.state ? "is-error" : "",

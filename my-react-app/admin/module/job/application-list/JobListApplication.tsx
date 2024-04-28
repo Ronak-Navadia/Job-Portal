@@ -5,17 +5,49 @@ import Loader from "../../../shared/Loader";
 import { useNavigate } from "react-router-dom";
 import { DownloadIcon } from "../../../shared/Icon";
 import * as XLSX from "xlsx";
-import clsx from "clsx";
-import { useState } from "react";
+import { useRef, useState } from "react";
+import FormControl from "../../../../src/components/FormControl";
+import { debounce } from "lodash";
+import ReactPaginate from "react-paginate";
+import { statesDataList } from "../../../../src/shared/helpers/data";
 
 const JobListApplication = () => {
   const { jobId } = useParams();
   const navigate = useNavigate();
   const [genderFilter, setGenderFilter] = useState("");
+  const [expectedSalaryFilter, setExpectedSalaryFilter] = useState("");
+  const [noticePeriodFilter, setNoticePeriodFilter] = useState("");
+  const [stateFilter, setStateFilter] = useState("");
+  const [educationFilter, setEducationFilter] = useState("");
+  const [page, setPage] = useState(1);
 
-  const { data: jobListApplicationData, isLoading: jobListApplicationIsLoading } = useQuery({
-    queryKey: ["get-application-based-on-job-id", genderFilter],
-    queryFn: () => getApplicationBasedOnJob(jobId, genderFilter),
+  const handleViewApplication = (applicationId: number) => {
+    navigate(`/admin/job-category-user-application/${applicationId}?fromJob`);
+  };
+
+  const {
+    data: jobListApplicationData,
+    isLoading: jobListApplicationIsLoading,
+    refetch: refetchJobListApplicationData,
+  } = useQuery({
+    queryKey: [
+      "get-application-based-on-job-id",
+      genderFilter,
+      expectedSalaryFilter,
+      noticePeriodFilter,
+      stateFilter,
+      page,
+    ],
+    queryFn: () =>
+      getApplicationBasedOnJob(
+        jobId,
+        genderFilter,
+        expectedSalaryFilter,
+        noticePeriodFilter,
+        stateFilter,
+        educationFilter,
+        page
+      ),
   });
 
   const generateJobListApplicationArray = () => {
@@ -31,8 +63,8 @@ const JobListApplication = () => {
       "Applicant Expected CTC": application?.expected_ctc || "-",
       "Notice Period": application?.notice_period || "-",
       "Total Work Exp.": application?.total_work_experience || "-",
-      "State": application?.state || "-",
-      "Gender": application?.gender || "-",
+      State: application?.state || "-",
+      Gender: application?.gender || "-",
     }));
   };
 
@@ -44,13 +76,44 @@ const JobListApplication = () => {
     XLSX.writeFile(wb, "job-list-applications.xlsx");
   };
 
-  const onGenderFilter = (event:any) => {
-    setGenderFilter(event.target.value)
-  }
-
   const onClickResetFilter = () => {
     setGenderFilter("");
-  }
+    setExpectedSalaryFilter("");
+    setNoticePeriodFilter("");
+    setStateFilter("");
+    setEducationFilter("");
+  };
+
+  const onGenderFilter = (event: any) => {
+    setGenderFilter(event.target.value);
+  };
+
+  const onExpectedSalaryFilter = (event: any) => {
+    setExpectedSalaryFilter(event?.target.value);
+  };
+
+  const onNoticePeriodFilter = (event: any) => {
+    setNoticePeriodFilter(event?.target.value);
+  };
+
+  const onStateFilter = (event: any) => {
+    setStateFilter(event?.target.value);
+  };
+
+  const executeSearch = useRef(
+    debounce(async () => {
+      await refetchJobListApplicationData();
+    }, 500)
+  ).current;
+
+  const onEducationFilter = (event: any) => {
+    setEducationFilter(event?.target.value);
+    executeSearch();
+  };
+
+  const handlePageChange = (selected: number) => {
+    setPage(selected + 1);
+  };
 
   if (jobListApplicationIsLoading) {
     return (
@@ -65,15 +128,18 @@ const JobListApplication = () => {
       <div className="app-wrapper">
         <div className="app-content pt-3 p-md-3 p-lg-4">
           <div className="container-xl">
-          <nav aria-label="breadcrumb mb-5">
-            <ol className="breadcrumb bg-transparent p-0">
-              <li className="breadcrumb-item ">
-                <button className="bg-transparent border-0 textgreen" onClick={()=> navigate(-1)}>
-                &#x2190; Job List
-                </button>
-              </li>
-            </ol>
-          </nav>
+            <nav aria-label="breadcrumb mb-5">
+              <ol className="breadcrumb bg-transparent p-0">
+                <li className="breadcrumb-item ">
+                  <button
+                    className="bg-transparent border-0 textgreen"
+                    onClick={() => navigate(-1)}
+                  >
+                    &#x2190; Job List
+                  </button>
+                </li>
+              </ol>
+            </nav>
             <div className="d-flex flex-wrap align-items-center mb-3">
               <h1 className="app-page-title mb-0">Job Applications</h1>
               <button
@@ -97,6 +163,55 @@ const JobListApplication = () => {
                 <option value="female">Female</option>
                 <option value="others">Others</option>
               </select>
+              <select
+                className={"form-control appearance-auto w-auto"}
+                id="inputgender"
+                value={expectedSalaryFilter}
+                name="gender"
+                onChange={onExpectedSalaryFilter}
+              >
+                <option value="">Expected Salary Range</option>
+                <option value="1to3">1-3 lakh</option>
+                <option value="3to5">3-5 lakh</option>
+                <option value="5to7">5-7 lakh</option>
+                <option value="more">more than 7 lakh</option>
+              </select>
+              <select
+                className={"form-control appearance-auto w-auto"}
+                id="inputgender"
+                value={noticePeriodFilter}
+                name="notice-period"
+                onChange={onNoticePeriodFilter}
+              >
+                <option value="">Notice Period Range</option>
+                <option value="1to90">1-3 month</option>
+                <option value="90to180">3-6 month</option>
+                <option value="more">more than 6 months</option>
+              </select>
+              <select
+                className={"form-control"}
+                id="inputState"
+                value={stateFilter}
+                name="state"
+                onChange={onStateFilter}
+              >
+                {statesDataList.map((state) => (
+                  <option key={state.value} value={state.value}>
+                    {state.label}
+                  </option>
+                ))}
+              </select>
+
+              <FormControl
+                onChange={(event: any) => onEducationFilter(event)}
+                value={educationFilter}
+                id="education"
+                type="text"
+                name="education"
+                className={""}
+                placeholderText="Enter education"
+              />
+
               <button
                 type="button"
                 className="btn-primary text-white"
@@ -117,28 +232,59 @@ const JobListApplication = () => {
                     <th scope="col">Notice Period</th>
                     <th scope="col">Total Work Exp.</th>
                     <th scope="col">Gender</th>
+                    <th scope="col">Action</th>
                   </tr>
                 </thead>
                 <tbody>
-                  {jobListApplicationData?.length === 0 && (
-                    <tr><td colSpan={8}>No Data Found.</td></tr>
-                  )}
-                  {jobListApplicationData && jobListApplicationData?.length > 0 &&
-                    jobListApplicationData.map((application: any, index: number) => (
-                      <tr key={index}>
-                        <td>{index + 1}</td>
-                        <td>{application.job_id.title}</td>
-                        <td>{application.first_name }</td>
-                        <td>{application.ctc }</td>
-                        <td>{application.expected_ctc}</td>
-                        <td>{application.notice_period}</td>
-                        <td>{application.total_work_experience}</td>
-                        <td>{application.gender}</td>
+                  {!jobListApplicationData.data ||
+                    (jobListApplicationData.data.length === 0 && (
+                      <tr>
+                        <td colSpan={9}>No Data Found.</td>
                       </tr>
                     ))}
+                  {jobListApplicationData.data &&
+                    jobListApplicationData?.data.length > 0 &&
+                    jobListApplicationData.data.map(
+                      (application: any, index: number) => (
+                        <tr key={index}>
+                          <td>{index + 1}</td>
+                          <td>{application.job_id.title}</td>
+                          <td>{application.first_name}</td>
+                          <td>{application.ctc}</td>
+                          <td>{application.expected_ctc}</td>
+                          <td>{application.notice_period}</td>
+                          <td>{application.total_work_experience}</td>
+                          <td>{application.gender}</td>
+                          <td>
+                            <button
+                              className="ml-2 btn btn-secondary p-2 text-white"
+                              onClick={() =>
+                                handleViewApplication(application._id)
+                              }
+                            >
+                              View
+                            </button>
+                          </td>
+                        </tr>
+                      )
+                    )}
                 </tbody>
               </table>
             </div>
+            {jobListApplicationData.pageInfo.length > 0 && (
+              <ReactPaginate
+                className="custom-pagination "
+                breakLabel="..."
+                nextLabel="Next"
+                onPageChange={(event) => handlePageChange(event.selected)}
+                pageCount={jobListApplicationData.pageInfo[0].totalPages}
+                pageRangeDisplayed={3}
+                previousLabel="Previous"
+                renderOnZeroPageCount={null}
+                activeClassName="paginate-active"
+                forcePage={jobListApplicationData.pageInfo[0].currentPage}
+              />
+            )}
           </div>
         </div>
       </div>

@@ -1,14 +1,17 @@
-import { useParams, useNavigate } from "react-router-dom";
+import { useParams, useNavigate, useSearchParams } from "react-router-dom";
 import { categoryView, getPdf } from "../api";
 import { useQuery } from "@tanstack/react-query";
 import { useEffect, useState } from "react";
 import useJobCategories from "../../../shared/store/useJobCategories";
+import { isNull } from "lodash";
 
 const JobCategoryUserApplication = () => {
   const navigate = useNavigate();
   const { jobCategoriesTitle } = useJobCategories();
-
   const { categoryId } = useParams();
+  const [searchParam] = useSearchParams();
+  const isFromJob = searchParam.get('fromJob');
+  console.log({isFromJob});
 
   const [viewResumeClicked, setViewResumeClicked] = useState(false);
 
@@ -42,7 +45,7 @@ const JobCategoryUserApplication = () => {
             <ol className="breadcrumb bg-transparent p-0">
               <li className="breadcrumb-item">
                 <button className="bg-transparent border-0 textgreen" onClick={()=> navigate(-1)}>
-                &#x2190; {jobCategoriesTitle} List
+                  &#x2190; {isNull(isFromJob) ? jobCategoriesTitle : 'Job Applications'} List
                 </button>
               </li>
             </ol>

@@ -16,6 +16,7 @@ import Loader from "../../../shared/Loader";
 import { createJobSchema } from "../validation";
 import FormError from "../../../shared/FormError";
 import clsx from "clsx";
+import FormLabel from "../../../../src/components/FormLabel";
 
 const UpdateJob = () => {
   const { jobId } = useParams();
@@ -174,8 +175,9 @@ const UpdateJob = () => {
           <div className="g-4 mb-4">
             <form className="row" onSubmit={handleSubmit}>
               <div className="col-12 mb-3">
+                <FormLabel name="Enter Job Title" htmlFor="title" />
                 <FormControl
-                className={errors.title ? "is-error" : ""}
+                  className={errors.title ? "is-error" : ""}
                   type="text"
                   id="title"
                   onChange={handleChange}
@@ -187,6 +189,7 @@ const UpdateJob = () => {
               </div>
 
               <div className="col-md-6 mb-3">
+                <FormLabel name="Enter Job Description" htmlFor="description" />
                 <textarea
                   className={clsx(
                     errors.description ? "is-error" : "",
@@ -202,6 +205,10 @@ const UpdateJob = () => {
               </div>
 
               <div className="col-md-6 mb-3">
+                <FormLabel
+                  name="Enter Required Knowledge, Skills, and Abilities"
+                  htmlFor="knowledge_description"
+                />
                 <textarea
                    className={clsx(
                     errors.knowledge_description ? "is-error" : "",
@@ -217,6 +224,10 @@ const UpdateJob = () => {
               </div>
 
               <div className="col-md-6 mb-3">
+                <FormLabel
+                  name="Enter Education + Experience"
+                  htmlFor="education_description"
+                />
                 <textarea
                   className={clsx(
                     errors.education_description ? "is-error" : "",
@@ -232,6 +243,10 @@ const UpdateJob = () => {
               </div>
 
               <div className="col-md-6 mb-3">
+                <FormLabel
+                  name="Enter Company Job Description"
+                  htmlFor="company_description"
+                />
                 <textarea
                    className={clsx(
                     errors.company_description ? "is-error" : "",
@@ -247,6 +262,7 @@ const UpdateJob = () => {
               </div>
 
               <div className="col-md-6 mb-3">
+                <FormLabel name="Enter Company Name" htmlFor="company_name" />
                 <FormControl
                   type="text"
                   className={errors.company_name ? "is-error" : ""}
@@ -260,6 +276,7 @@ const UpdateJob = () => {
               </div>
 
               <div className="col-md-6 mb-3">
+                <FormLabel name="Enter Company Email" htmlFor="email" />
                 <FormControl
                   type="email"
                   className={errors.company_email ? "is-error" : ""}
@@ -273,6 +290,10 @@ const UpdateJob = () => {
               </div>
 
               <div className="col-md-6 mb-3">
+                <FormLabel
+                  name="Enter Job Categories"
+                  htmlFor="job-categories"
+                />
                 <ReactSelect
                   name="job-categories"
                   onChange={handleCategoryChange}
@@ -286,6 +307,7 @@ const UpdateJob = () => {
               </div>
 
               <div className="col-md-6 mb-3">
+                <FormLabel name="Enter Job Location" htmlFor="job-location" />
                 <ReactSelect
                   name="job-location"
                   onChange={handleLocationChange}
@@ -299,6 +321,10 @@ const UpdateJob = () => {
               </div>
 
               <div className="col-md-6 mb-3">
+                <FormLabel
+                  name="Enter Total Number of Vacancy"
+                  htmlFor="vacancy"
+                />
                 <FormControl
                   value={values.vacancy}
                   className={errors.vacancy ? "is-error" : ""}
@@ -312,6 +338,10 @@ const UpdateJob = () => {
               </div>
 
               <div className="col-md-6 mb-3">
+                <FormLabel
+                  name="Enter Job nature (Full-Time/Part-Time)"
+                  htmlFor="nature"
+                />
                 <select
                   className={clsx(
                     errors.nature ? "is-error" : "",
@@ -326,18 +356,14 @@ const UpdateJob = () => {
                   <option value="Part time">Part time</option>
                   <option value="Full time">Full time</option>
                 </select>
-                {/* <FormControl
-                  type="text"
-                  value={values.nature}
-                  className={errors.nature ? "is-error" : ""}
-                  id="nature"
-                  name="nature"
-                  onChange={handleChange}
-                  placeholder="Enter Job nature (Full-Time/Part-Time)"
-                /> */}
                 <FormError error={errors.nature} />
               </div>
+
               <div className="col-md-6 mb-3">
+                <FormLabel
+                  name="Enter Company Website URL"
+                  htmlFor="company_website"
+                />
                 <FormControl
                   type="text"
                   className={errors.company_website ? "is-error" : ""}
@@ -349,6 +375,7 @@ const UpdateJob = () => {
                 />
                 <FormError error={errors.company_website} />
               </div>
+              
               <div className="text-center">
                 <button
                   type="submit"

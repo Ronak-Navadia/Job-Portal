@@ -11,6 +11,7 @@ const JobCategory = require('./models/JobCategoryModel.js');
 const multer = require('multer');
 const fs = require('fs');
 const path = require('path');
+const { default: mongoose } = require('mongoose');
 
 connectDb();
 const app = express();
@@ -64,8 +65,6 @@ app.post('/apply', upload.single('resume_file'), async (req, res) => {
     const applicationData = req.body;
     const filePath = req.file.path;
 
-    console.log(req.file.path);
-    
     const newApplication = await Application.create({
       ...applicationData,
       resume_file: filePath 
@@ -77,17 +76,6 @@ app.post('/apply', upload.single('resume_file'), async (req, res) => {
     res.status(500).json({ error: 'Internal server error' });
   }
 });
-
-// app.post('/apply', async (req, res) => {
-//   try {
-//     const applicationData = req.body;
-//     const newApplication = await Application.create(applicationData);
-//     res.status(201).json(newApplication);
-//   } catch (error) {
-//     console.error('Error creating application:', error);
-//     res.status(500).json({ error: 'Internal server error' });
-//   }
-// });
 
 // get all job locations
 app.get('/jobs-locations', async (req, res) => {
@@ -147,41 +135,85 @@ app.get("/get-all-jobs", async(re, res) => {
 
 //get all jobs with paginate
 app.get("/jobs", async (req, res) => {
-  const { search, category, location } = req.query;
-  const page = parseInt(req.query.page) || 1;
+  const { search, category, location, page } = req.query;
   const perPage = 3;
 
-  let filter = {}
-  if (search) {
-    const exactTitle = await Job.findOne({ title: search });
-    filter.title = exactTitle ? exactTitle.title : null;
-
-    // filter.category_id = await JobCategory.findOne({ name: { $regex: search, $options: 'i' } }).select('_id');
-  }
-  if (category) {
-    const exactCategory = await JobCategory.findOne({ name: category });
-    filter.category_id = exactCategory ? exactCategory._id : null;
-  }
-
-  if (location) {
-    const exactLocation = await JobLocation.findOne({ name: location });
-    filter.job_location_id = exactLocation ? exactLocation._id : null;
-  }
+  let pipeline = [];
 
   try {
-    const jobs = await Job
-      .paginate(filter,{
-        populate: "category_id job_location_id",
-        lean: true,
-        page:page,
-        limit: perPage,
-        customLabels:{
-          docs:'jobs'
-        }
-      });
 
+    if (search !== "") {
+      pipeline.push({
+        $match: {title: {$regex: search, $options: "i" }}
+      })
+    }
 
-    res.json(jobs);
+    if (category !== "") {
+      pipeline.push({
+        $match: {category_id: new mongoose.Types.ObjectId(category)}
+      })
+    }
+
+    if (location !== "") {
+      pipeline.push({
+        $match: {job_location_id: new mongoose.Types.ObjectId(location)}
+      })
+    }
+
+    pipeline.push({
+      $lookup: {
+        from: "job_locations",
+        localField: "job_location_id",
+        foreignField: "_id",
+        as: "job_location_id"
+      }
+    });
+
+    pipeline.push({
+      $lookup: {
+        from: "job_categories",
+        localField: "category_id",
+        foreignField: "_id",
+        as: "category_id"
+      }
+    });
+
+    pipeline.push({
+      $unwind: "$job_location_id"
+    });
+
+    pipeline.push({
+      $unwind: "$category_id"
+    });
+
+    pipeline.push({
+      $sort: { createdAt: -1 }
+    });
+
+    pipeline.push({
+      $facet: {
+        data: [
+          { $skip: perPage * (Number(page) - 1) },
+          { $limit: perPage },
+        ],
+        pageInfo: [
+          { $group: { _id: null, totalCount: { $sum: 1 } } },
+          {
+            $addFields: {
+              totalPages: {
+                $ceil: { $divide: ["$totalCount", perPage] },
+              },
+              currentPage: Number(page),
+              _id: 0,
+            },
+          },
+        ],
+      },
+    })
+
+    const jobs = await Job.aggregate(pipeline);
+
+    res.json(jobs[0]);
   } catch (error) {
     console.error("Error fetching jobs:", error);
     res.status(500).json({ error: "Internal server error" });

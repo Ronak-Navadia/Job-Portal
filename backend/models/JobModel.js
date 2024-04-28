@@ -24,12 +24,9 @@ const jobSchema = new mongoose.Schema({
   },
   vacancy: Number,
   nature: String,
-  created_at: {
-    type: Date,
-    default: Date.now
-  }
-
-});
+},
+{ timestamps: { createdAt: true, updatedAt: false } }
+);
 
 jobSchema.plugin(mongoosePaginate);
 

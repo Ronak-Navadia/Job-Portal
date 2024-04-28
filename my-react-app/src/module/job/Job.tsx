@@ -38,17 +38,9 @@ const Job = () => {
 
   });
 
-  useEffect(() => {
-    // if(!!jobListFilter.searchFilter || (!!jobListFilter.categoryFilter || !!jobListFilter.locationFilter)) {
-      jobDataRefetch();
-    // }
-    // return;
-
-  }, [jobListFilter, jobDataRefetch])
-
   return (
     <>
-      <ClientBanner setJobListFilter={setJobListFilter} setPage={setPage}/>
+      <ClientBanner setJobListFilter={setJobListFilter} setPage={setPage} jobDataRefetch={jobDataRefetch} />
       <FeaturedJobs
         setApplyNowModal={setApplyNowModal}
         setApplyJobData={setApplyJobData}

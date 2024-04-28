@@ -25,6 +25,7 @@ const FeaturedJobs = ({
 }: FeaturedJobsProps) => {
   const [activePage, setActivePage] = useState(0);
 
+  console.log(jobsData);
   if (jobsDataIsLoading) {
     return (
       <div className="text-center py-4 bg-white banner-height">
@@ -50,10 +51,10 @@ const FeaturedJobs = ({
         </div>
         <div className="row justify-content-center">
           <div className="col-xl-10">
-          {!jobsData.jobs || (jobsData.jobs.length === 0 && <h3 className="text-center mb-5">No Data Found</h3>)}
-            {jobsData?.jobs?.length > 0 && !jobsDataIsLoading && (
+          {!jobsData.data || (jobsData.data.length === 0 && <h3 className="text-center mb-5">No Data Found</h3>)}
+            {jobsData?.data?.length > 0 && !jobsDataIsLoading && (
               <>
-                {jobsData?.jobs?.map((job: any, index: number) => (
+                {jobsData?.data?.map((job: any, index: number) => (
                   <span key={index}>
                     <SingleJobList
                       setApplyNowModal={setApplyNowModal}
@@ -72,13 +73,13 @@ const FeaturedJobs = ({
             )}
           </div>
         </div>
-        {jobsData.jobs.length > 0 && (
+        {jobsData.data.length > 0 && (
           <ReactPaginate
             className="custom-pagination "
             breakLabel="..."
             nextLabel="Next"
             onPageChange={(event) => handlePageChange(event.selected)}
-            pageCount={jobsData.totalPages}
+            pageCount={jobsData.pageInfo[0].totalPages}
             pageRangeDisplayed={3}
             previousLabel="Previous"
             renderOnZeroPageCount={null}

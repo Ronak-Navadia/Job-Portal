@@ -63,7 +63,7 @@ const SideBar = ({ sidebarOpen, handleClose }: any) => {
           &times;
         </button>
         <div className="app-branding">
-          <a className="app-logo" href="index.html">
+          <a className="app-logo" href="/admin/job-category-list">
             <img className="logo-icon me-2" src={logo} alt="logo" />
           </a>
         </div>

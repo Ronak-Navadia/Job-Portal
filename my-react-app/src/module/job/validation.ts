@@ -21,6 +21,6 @@ export const ApplicationModalSchema = Yup.object().shape({
   .typeError('Total work experience must be a number')
   .required('Total work experience is required')
   .positive('Total work experience must be a positive number'),
-  gender: Yup.string().required('Please select your gender').oneOf(['male', 'female'], 'Gender is required'),
+  gender: Yup.string().required('Gender is required').oneOf(['male', 'female', 'others'], 'Gender is required'),
   state: Yup.string().required('State is required'),
 });

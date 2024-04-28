@@ -25,7 +25,9 @@ const ApplicationSchema = new mongoose.Schema({
   gender: String,
   state: String,
   resume_file: String
-});
+},
+{ timestamps: { createdAt: true, updatedAt: false } }
+);
 
 const Application = mongoose.model('applications', ApplicationSchema);
 

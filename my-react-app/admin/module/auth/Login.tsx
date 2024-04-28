@@ -56,7 +56,7 @@ const Login = () => {
         <div className="d-flex flex-column align-content-end">
           <div className="app-auth-body mx-auto">
             <div className="app-auth-branding mb-4">
-              <Link className="app-logo" to="#0">
+              <Link className="app-logo" to="#">
                 <img className="logo-icon me-2" src={logo} alt="logo" />
               </Link>
             </div>
@@ -86,7 +86,7 @@ const Login = () => {
                     placeholder="Password"
                   />
                   <FormError error={errors.password} />
-                  <div className="extra mt-3 row justify-content-between">
+                  {/* <div className="extra mt-3 row justify-content-between">
                     <div className="col-6">
                       <div className="form-check">
                         <input
@@ -108,7 +108,7 @@ const Login = () => {
                         <Link to="#0">Forgot password?</Link>
                       </div>
                     </div>
-                  </div>
+                  </div> */}
                 </div>
                 <div className="text-center">
                   <button

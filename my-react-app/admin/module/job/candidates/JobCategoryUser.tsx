@@ -3,17 +3,29 @@ import { categoryList } from "../api";
 import { useQuery } from "@tanstack/react-query";
 import { categoryDataType } from "../../../shared/types";
 import useJobCategories from "../../../shared/store/useJobCategories";
+import { useState } from "react";
+import ReactPaginate from "react-paginate";
 
 const JobCategoryUser = () => {
   const { categoryId } = useParams();
   const { jobCategoriesTitle } = useJobCategories();
-  const { data: categoryData } = useQuery({
+  const [page, setPage] = useState(1);
+
+  const { data: categoryData, isLoading: isLoadingCategoryData } = useQuery({
     queryKey: ["job-category-user"],
-    queryFn: () => categoryList(categoryId),
-    select: (res) => {
-      return res.category_applications;
-    }
+    queryFn: () => categoryList(categoryId, page),
+    // select: (res) => {
+    //   return res.data;
+    // }
   });
+
+  const handlePageChange = (selected: number) => {
+    setPage(selected + 1);
+  };
+
+  if (isLoadingCategoryData) {
+    return;
+  }
 
   return (
     <div className="app-wrapper">
@@ -22,7 +34,9 @@ const JobCategoryUser = () => {
           <nav aria-label="breadcrumb mb-5">
             <ol className="breadcrumb bg-transparent p-0">
               <li className="breadcrumb-item ">
-                <Link to="/admin/job-category-list" className="textgreen">&#x2190; {jobCategoriesTitle} List</Link>
+                <Link to="/admin/job-category-list" className="textgreen">
+                  &#x2190; {jobCategoriesTitle} List
+                </Link>
               </li>
             </ol>
           </nav>
@@ -44,22 +58,50 @@ const JobCategoryUser = () => {
                 </tr>
               </thead>
               <tbody>
-                {categoryData &&
-                  categoryData.map((category: categoryDataType, index: number) => (
-                    <tr key={index}>
-                      <td>{category.first_name}</td>
-                      <td>{category.email}</td>
-                      <td>{category.mobile_number}</td>
-                      <td>
-                        <Link className="textgreen" to={`/admin/job-category-user-application/${category._id}`}>
-                          View Candidate Detail
-                        </Link>
-                      </td>
+                {!categoryData.data ||
+                  (categoryData.data.length === 0 && (
+                    <tr>
+                      <td colSpan={4}>No Data Found.</td>
                     </tr>
                   ))}
+                {categoryData.data &&
+                  categoryData.data.length > 0 &&
+                  categoryData.data.map(
+                    (category: categoryDataType, index: number) => (
+                      <tr key={index}>
+                        <td>{category.first_name}</td>
+                        <td>{category.email}</td>
+                        <td>{category.mobile_number}</td>
+                        <td>
+                          <Link
+                            className="textgreen"
+                            to={`/admin/job-category-user-application/${category._id}`}
+                          >
+                            View Candidate Detail
+                          </Link>
+                        </td>
+                      </tr>
+                    )
+                  )}
               </tbody>
             </table>
           </div>
+          {categoryData.pageInfo.length > 0 && (
+            <>
+              <ReactPaginate
+                className="custom-pagination "
+                breakLabel="..."
+                nextLabel="Next"
+                onPageChange={(event) => handlePageChange(event.selected)}
+                pageCount={categoryData.pageInfo[0].totalPages}
+                pageRangeDisplayed={3}
+                previousLabel="Previous"
+                renderOnZeroPageCount={null}
+                activeClassName="paginate-active"
+                forcePage={categoryData.pageInfo[0].currentPage}
+              />
+            </>
+          )}
         </div>
       </div>
     </div>

@@ -140,3 +140,35 @@ table.table {
     font-size: 14px;
   }
 }
+
+.custom-pagination {
+  display: flex;
+  justify-content: center;
+  padding-left: 0;
+  list-style: none;
+}
+.custom-pagination a {
+  border: 1px solid #38b17a;
+  color: #38b17a;
+  position: relative;
+  display: block;
+  padding: 0.5rem 0.75rem;
+  margin-left: -1px;
+  line-height: 1.25;
+  background-color: #fff;
+  /* border: 1px solid #dee2e6; */
+  cursor: pointer;
+}
+.custom-pagination .paginate-active a {
+  color: white !important;
+  background-color: #38b17a;
+}
+.custom-pagination .previous a {
+  margin-left: 0;
+  border-top-left-radius: 0.25rem;
+  border-bottom-left-radius: 0.25rem;
+}
+.custom-pagination .next a {
+  border-top-right-radius: 0.25rem;
+  border-bottom-right-radius: 0.25rem;
+}

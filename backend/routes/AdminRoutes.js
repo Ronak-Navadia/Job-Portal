@@ -433,6 +433,7 @@ router.get("/get-applications", authMiddleware, async (req, res) => {
   try {
 
     if (gender !== "") {
+
       pipeline.push({
         $match: { gender }
       });
@@ -441,6 +442,7 @@ router.get("/get-applications", authMiddleware, async (req, res) => {
     }
 
     if (salary !== "") {
+
       if (salary === "1to3") {
         pipeline.push({ $match: { expected_ctc: { $gte: 100000, $lte: 300000 } } });
       } else if (salary === "3to5") {
@@ -463,12 +465,14 @@ router.get("/get-applications", authMiddleware, async (req, res) => {
     }
 
     if (state !== "") {
+
       pipeline.push({
         $match: { state }
       });
     }
 
     if (education !== "") {
+
       pipeline.push({
         $match: { education: { $regex: education, $options: "i"} }
       });
@@ -493,7 +497,7 @@ router.get("/get-applications", authMiddleware, async (req, res) => {
     });
 
     pipeline.push({
-      $unwind: "$job_id"
+      $unwind: {path: "$job_id", preserveNullAndEmptyArrays: true}
     });
 
     pipeline.push({
@@ -526,8 +530,8 @@ router.get("/get-applications", authMiddleware, async (req, res) => {
       },
     })
 
+
     const applications = await Application.aggregate(pipeline);
-      
     res.json(applications[0]);
   } catch (error) {
     console.error("Error fetching all applications:", error);
